@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI workflow workbook</title>
+<style>
+  @font-face{font-family:"Inter Variable";src:url("assets/fonts/Inter-VariableFont.ttf") format("truetype-variations");font-weight:100 900;font-style:normal;font-display:swap}
+  :root {
+    /* Digital Finest design system, screen profile */
+    --ink: #ffffff;
+    --muted: rgba(255, 255, 255, 0.72);
+    --paper: #000000;
+    --card: rgba(144, 0, 246, 0.2);
+    --card-strong: rgba(144, 0, 246, 0.6);
+    --card-inset: rgba(144, 0, 246, 0.1);
+    --line: rgba(144, 0, 246, 0.2);
+    --hairline: #2a2a2a;
+    --violet: #9000f6;
+    --violet-text: #dcb9fe;
+    --blue: #b4fc00;
+    --blue-soft: rgba(144, 0, 246, 0.2);
+    --copper: #b4fc00;
+    --copper-soft: rgba(144, 0, 246, 0.1);
+    --green: #b4fc00;
+    --yellow: #dcb9fe;
+    --red: #ffffff;
+    --shadow: none;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; color: var(--ink); background: var(--paper); font: 19.2px/28.8px "Inter Variable", "Neue Haas Unica", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  a { color: var(--blue); }
+  a:hover { color: #ffffff; }
+  button, input { font: inherit; }
+  button { cursor: pointer; }
+  .topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.8rem max(1rem, calc((100vw - 76rem) / 2)); background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(8px); border-bottom: 1px solid var(--hairline); }
+  .brand { font-weight: 600; letter-spacing: -0.02em; }
+  .mode-toggle { display: inline-flex; padding: 0.25rem; background: var(--card-inset); border: 1px solid var(--line); border-radius: 5px; }
+  .mode-toggle button { border: 0; padding: 0.45rem 0.8rem; color: var(--muted); background: transparent; border-radius: 5px; font-size: 17.6px; letter-spacing: 0.4px; font-weight: 500; }
+  .mode-toggle button[aria-pressed="true"] { color: #000000; background: var(--blue); font-weight: 600; }
+  .wrap { width: min(100% - 2rem, 76rem); margin: 0 auto; }
+  .hero { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(16rem, 0.6fr); gap: 3rem; align-items: end; min-height: 68vh; padding: 7rem 0 4rem; border-bottom: 1px solid var(--line); }
+  .eyebrow { margin: 0 0 1rem; color: var(--copper); font-size: 20px; line-height: 22px; font-weight: 600; }
+  h1, h2, h3 { font-family: inherit; letter-spacing: -0.02em; font-weight: 600; }
+  h1 { max-width: 14ch; margin: 0; font-size: clamp(2.8rem, 8vw, 4.75rem); line-height: 1.05; }
+  h2 { margin: 0 0 1rem; font-size: 44.8px; line-height: 49.28px; }
+  h3 { margin: 0 0 0.6rem; font-size: 20.8px; line-height: 32.24px; letter-spacing: -0.01em; }
+  p { margin: 0 0 1rem; }
+  .hero-note { padding: 1.5rem; background: var(--card-strong); color: var(--ink); border: 1px solid var(--violet); border-radius: 20px; }
+  .hero-note p:last-child { margin-bottom: 0; }
+  .prompt { position: relative; margin: 1.5rem 0; padding: 3.2rem 1.5rem 1.5rem; background: var(--card); border: 1px solid var(--line); border-left: 2px solid var(--copper); border-radius: 10px; box-shadow: var(--shadow); }
+  .prompt-label { position: absolute; top: 1rem; left: 1.5rem; color: var(--copper); font-size: 16px; line-height: 24px; font-weight: 600; }
+  .prompt-text { display: block; white-space: pre-wrap; color: var(--muted); font: 16px/24px "Inter Variable", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  .copy { position: absolute; top: 0.75rem; right: 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem; min-width: 2.75rem; min-height: 2.75rem; padding: 0.45rem 0.7rem; border: 1px solid var(--line); color: var(--blue); background: transparent; border-radius: 5px; font-size: 16px; }
+  .copy:hover { background: var(--blue); color: #000000; border-color: var(--blue); }
+  .copy svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.8; }
+  .copy-status { font-size: 0.72rem; font-weight: 700; }
+  .section { padding: 112px 0; border-bottom: 1px solid var(--hairline); }
+  .section-head { display: grid; grid-template-columns: 8rem minmax(0, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
+  .section-number { color: var(--copper); font: 700 48px/48px inherit; }
+  .step-grid { display: grid; grid-template-columns: minmax(15rem, 0.55fr) minmax(0, 1.45fr); gap: 2rem; padding: 2.5rem 0; border-top: 1px solid var(--hairline); }
+  .actions { list-style: none; padding: 0; margin: 1.2rem 0 0; }
+  .actions li { margin: 1rem 0; }
+  .actions label { display: flex; gap: 0.7rem; align-items: flex-start; color: var(--muted); }
+  .actions input { width: 1.15rem; height: 1.15rem; margin-top: 0.4rem; accent-color: var(--blue); }
+  .card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+  .card { padding: 24px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; }
+  .card > :last-child { margin-bottom: 0; }
+  .badge { display: inline-block; margin-bottom: 0.75rem; padding: 0 10px; color: var(--blue); background: var(--card-inset); border: 1px solid var(--line); border-radius: 5px; font-size: 16px; line-height: 24px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin: 1.4rem 0; font-size: 16px; line-height: 24px; }
+  th, td { padding: 16px; border: 1px solid var(--line); text-align: left; vertical-align: top; color: var(--muted); }
+  th { background: var(--card-inset); color: var(--ink); font-weight: 600; }
+  .green { color: var(--green); font-weight: 600; }
+  .yellow { color: var(--yellow); font-weight: 600; }
+  .red { color: var(--red); font-weight: 600; }
+  .recipe { counter-reset: recipe; list-style: none; padding: 0; }
+  .recipe li { counter-increment: recipe; position: relative; margin: 0; padding: 1rem 0 1rem 3.2rem; border-bottom: 1px solid var(--hairline); color: var(--muted); }
+  .recipe li::before { content: counter(recipe); position: absolute; left: 0; top: 0.85rem; display: grid; place-items: center; width: 2rem; height: 2rem; color: #000000; background: var(--copper); border-radius: 5px; font-weight: 700; font-size: 16px; }
+  .notice { padding: 24px; background: var(--card-inset); border: 1px solid var(--violet); border-radius: 10px; }
+  .workshop-note { margin: 1.5rem 0; background: var(--card-inset); border: 1px solid var(--line); border-radius: 10px; }
+  .workshop-note summary { display: flex; align-items: baseline; gap: 0.7rem; padding: 16px 24px; cursor: pointer; font-weight: 600; color: var(--ink); list-style: none; }
+  .workshop-note summary::-webkit-details-marker { display: none; }
+  .workshop-note summary::before { content: ""; flex: none; width: 14px; height: 14px; margin-top: 6px; background: var(--copper);
+    clip-path: polygon(42% 0, 58% 0, 58% 42%, 100% 42%, 100% 58%, 58% 58%, 58% 100%, 42% 100%, 42% 58%, 0 58%, 0 42%, 42% 42%); }
+  .workshop-note[open] summary::before { clip-path: polygon(0 42%, 100% 42%, 100% 58%, 0 58%); }
+  .workshop-note summary .wn-tag { flex: none; color: var(--copper); font-size: 16px; line-height: 24px; font-weight: 600; }
+  .workshop-note .wn-body { padding: 0 24px 24px; color: var(--muted); }
+  .workshop-note .wn-body p:last-child { margin-bottom: 0; }
+  .wordmark { color: var(--ink); font-weight: 600; letter-spacing: -0.02em; }
+  .wordmark span { color: var(--blue); }
+  @media print { .workshop-note summary::before { background: #000000; } }
+  .download { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 24px; color: var(--muted); background: var(--card); border: 1px solid var(--line); border-radius: 10px; text-decoration: none; }
+  .download:hover { border-color: var(--blue); color: var(--ink); }
+  .download strong { color: var(--blue); }
+  .power-only { display: none; }
+  body.power .power-only { display: block; }
+  pre.card { white-space: pre-wrap; font: 16px/24px "Inter Variable", ui-monospace, Menlo, monospace; color: var(--muted); }
+  footer { padding: 48px 0; color: var(--muted); font-size: 16px; line-height: 24px; }
+  :focus-visible { outline: 2px solid var(--copper); outline-offset: 2px; }
+  @media (max-width: 760px) {
+    body { font-size: 16px; }
+    .topbar { align-items: flex-start; flex-direction: column; }
+    .hero, .step-grid, .section-head { grid-template-columns: 1fr; }
+    .hero { min-height: 0; padding: 5rem 0 3rem; }
+    .section-number { font-size: 2.5rem; }
+    .card-grid { grid-template-columns: 1fr; }
+    .section { padding: 3.5rem 0; }
+    .prompt { padding-inline: 1rem; }
+    table { display: block; overflow-x: auto; }
+  }
+  .cta { text-align: center; border-bottom: 0; }
+  .cta .wrap-inner { max-width: 40rem; margin: 0 auto; }
+  .cta h2 { margin-bottom: 1.5rem; }
+  .cta-lead { color: var(--muted); margin-bottom: 2rem; }
+  .qr-card { display: inline-block; padding: 24px; background: #FEFDFF; border: 1px solid var(--violet); border-radius: 10px; }
+  .qr-card svg { display: block; width: 210px; height: 210px; }
+  .cta-link { margin-top: 1.5rem; font-weight: 600; }
+  @media print {
+    /* Digital Finest print profile: deliberate light adaptation for legibility and ink economy */
+    :root {
+      --ink: #000000; --muted: #1f0037; --paper: #fefdff; --card: #ffffff;
+      --card-strong: #f5f4f6; --card-inset: #f5f4f6; --line: #9000f6; --hairline: #cfcbd6;
+      --blue: #4b0082; --copper: #9000f6; --green: #1f0037; --yellow: #1f0037; --red: #1f0037;
+    }
+    body { color: var(--ink); background: var(--paper); font-size: 11pt; line-height: 1.5; }
+    .topbar, .copy { display: none; }
+    .wrap { width: 100%; }
+    .hero { min-height: 0; padding: 1rem 0 2rem; }
+    .hero-note { background: var(--card-inset); color: var(--ink); border-color: var(--line); }
+    .section { padding: 2rem 0; break-inside: avoid; }
+    .prompt, .card { box-shadow: none; break-inside: avoid; background: var(--card); }
+    .badge, .mode-toggle button[aria-pressed="true"], .recipe li::before { color: #ffffff; background: var(--blue); }
+    th { background: var(--card-inset); color: var(--ink); }
+    .power-only { display: block; }
+    .workshop-note { background: var(--card); }
+    a { color: var(--blue); text-decoration: none; }
+  }
+</style>
+</head>
+<body class="guided">
+<header class="topbar">
+  <div class="brand wordmark">AI workflow workbook<span>.</span></div>
+  <div class="mode-toggle" role="group" aria-label="Workbook mode">
+    <button type="button" data-mode="guided" aria-pressed="true">Guided mode</button>
+    <button type="button" data-mode="power" aria-pressed="false">Power user mode</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero" id="start">
+    <div>
+      <p class="eyebrow">Take-home workbook</p>
+      <h1>Build one workflow.</h1>
+    </div>
+    <div class="hero-note">
+      <p>You need one home base, and it is the AI app you already pay for. Every step of the method runs inside that one window.</p>
+      <p>Whenever you do not know how to set something up, your first prompt is:</p>
+    </div>
+  </section>
+
+  <div class="prompt" data-prompt-id="master-habit">
+    <span class="prompt-label">Master habit</span>
+    <button class="copy" type="button" aria-label="Copy master habit prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button>
+    <span class="prompt-text">explain how this works, then interview me.</span>
+  </div>
+
+  <section class="section" id="process">
+    <div class="section-head"><div class="section-number">01</div><div><p class="eyebrow">Core path</p><h2>The six steps</h2><p>Work in order. Build one workflow and keep your approval on anything another person will read.</p></div></div>
+
+    <article class="step-grid">
+      <div><span class="badge">Step 1</span><h3>Track where your time actually goes.</h3><p>Reconstruct yesterday when a full tracking week is not available.</p><ul class="actions"><li><label><input type="checkbox" data-check="s1-calendar">Use your calendar, sent emails, and memory.</label></li><li><label><input type="checkbox" data-check="s1-repeat">Mark what repeats through the week.</label></li><li><label><input type="checkbox" data-check="s1-cost">Rank repeating tasks by weekly time.</label></li></ul></div>
+      <div>
+        <div class="prompt" data-prompt-id="p1"><span class="prompt-label">Time audit, reconstructed</span><button class="copy" type="button" aria-label="Copy time audit prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"I want to find out where my working time actually goes, and I'd like you to reconstruct yesterday with me. Interview me one question at a time, starting with when I sat down to work, using my calendar, my sent emails, and my memory as sources. Build a list of everything I did and roughly how long each thing took, and mark whether it happens once or repeats through the week. When we're done, show me the repeating tasks ranked by how much time they likely eat per week, and flag any task I described with frustration in my wording, because those are probably the ones I shouldn't be doing myself."</span></div>
+        <div class="card" style="margin-top:1.5rem"><h3>The honest version, on paper</h3><p>If the reconstruction feels thin, or your weeks look nothing alike, track it by hand. A table with four columns: activity name, start time, estimated time, actual stop time. Keep it for at least a week, ideally a month, because one week lies; a month shows the pattern. Then paste the table into the time-audit prompt above and let your AI find what repeats.</p></div>
+      </div>
+    </article>
+
+    <article class="step-grid">
+      <div><span class="badge">Step 2</span><h3>Sort what repeats.</h3><p>Delete, delegate, automate fully, or let AI draft and you finish.</p><ul class="actions"><li><label><input type="checkbox" data-check="s2-dump">Make one brain dump of the week.</label></li><li><label><input type="checkbox" data-check="s2-piles">Sort each task into one pile.</label></li><li><label><input type="checkbox" data-check="s2-rank">Pick one task by impact and setup effort.</label></li></ul></div>
+      <div>
+        <div class="prompt" data-prompt-id="p2"><span class="prompt-label">Brain dump to sorted piles</span><button class="copy" type="button" aria-label="Copy brain dump sorter prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"Here is a brain dump of everything I do in a normal week in my business: [paste notes or voice-note transcript]. Break it into individual tasks. For each one, tell me whether it repeats, roughly what it costs me per week in time, and which bucket it belongs in: delete (nobody actually needs this anymore), delegate to a person (needs human judgment or relationships), automate fully (a wrong result would cost minutes), or automate as a draft I review (another human reads it with my name on it). Where you can't decide, ask me clarifying questions one at a time. Finish with the one task you'd automate first: the fully automatable one that eats the most time."</span></div>
+        <div class="prompt" data-prompt-id="pick-one"><span class="prompt-label">Pick the one</span><button class="copy" type="button" aria-label="Copy ranking prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"Here is the list of repeating tasks we just built. Rank the top five by highest impact against lowest setup effort, and for each one tell me: the hours a week it gives back, how hard it is to describe step by step (easy, medium, hard), and what actually improves in my business if it goes away, in plain words, not jargon. Then pick one and tell me why it beats the other four. If your pick isn't the biggest time sink, say why you chose it anyway."</span></div>
+        <div class="prompt power-only" data-prompt-id="p11"><span class="prompt-label">Human handoff</span><button class="copy" type="button" aria-label="Copy human handoff prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"I need to hand [task] to a person instead of doing it myself. Interview me one question at a time until you know everything they'd need: what comes in, the steps, what good looks like, the rules, common mistakes, and what they should escalate to me instead of deciding alone. Then write it up as a one-page working guide for a capable new hire, in plain language, with a checklist at the end they can follow on their first day."</span></div>
+      </div>
+    </article>
+
+    <article class="step-grid">
+      <div><span class="badge">Step 3</span><h3>Give the machine eyes.</h3><p>Connect only what the task needs.</p><ul class="actions"><li><label><input type="checkbox" data-check="s3-surface">Choose chat, Project, agent workspace, or schedule.</label></li><li><label><input type="checkbox" data-check="s3-access">Grant the smallest useful access.</label></li><li><label><input type="checkbox" data-check="s3-test">Test one read-only question.</label></li></ul></div>
+      <div>
+        <details class="workshop-note"><summary><span class="wn-tag">From the workshop</span>"The AI doesn't know my business."</summary><div class="wn-body"><p>Of course it doesn't. Nothing was connected, so it knew nothing because it was given nothing. The moment you connect one source, let's say your inbox, it stops guessing and starts reading. Small access, small mistakes: one connector is enough for your first workflow.</p></div></details>
+        <div class="prompt" data-prompt-id="p3"><span class="prompt-label">Setup navigator</span><button class="copy" type="button" aria-label="Copy setup navigator prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"I use [ChatGPT / Claude] on a paid plan, and I want to automate this task: [one sentence]. Tell me exactly where in your product I should build this: a normal chat, a Project, the desktop agent, or a scheduled task, and then walk me through the setup one step at a time, waiting for me to confirm each step before giving me the next. Include which connectors or folder access I need to turn on for this task, and just as important, which ones I should leave off. Assume I have never done any of this before."</span></div></div>
+    </article>
+
+    <article class="step-grid">
+      <div><span class="badge">Step 4</span><h3>Build one workflow.</h3><p>The briefing is the SOP, and the AI interviews you to write it.</p><ul class="actions"><li><label><input type="checkbox" data-check="s4-inputs">Name the inputs and steps.</label></li><li><label><input type="checkbox" data-check="s4-standard">Add approved examples.</label></li><li><label><input type="checkbox" data-check="s4-stop">Set stop and ask as the default when unsure.</label></li></ul></div>
+      <div>
+        <details class="workshop-note"><summary><span class="wn-tag">From the workshop</span>"It gives me generic output."</summary><div class="wn-body"><p>Generic output comes from a clever prompt instead of a briefing. Nobody briefs a new assistant in one sentence and fires them the same afternoon, yet that's how most people treat these tools. The interview below is the fix: the machine writes its own instructions, you correct them, and the corrections stay.</p></div></details>
+        <div class="prompt" data-prompt-id="p4"><span class="prompt-label">Self-briefing interview</span><button class="copy" type="button" aria-label="Copy self-briefing interview prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"I want you to handle [task] for me on a regular basis, and I want you to write your own instructions for it. Interview me one question at a time, never more than one, until you know: what comes in and from where, the exact steps I currently follow, what a finished result I'd be happy with looks like, the rules and edge cases I already know about, and what you should do when you're unsure, where the default answer is stop and ask me. Then write the complete instructions as if you were briefing an assistant on their first day, show them to me, and revise them based on my corrections until I say they're final. Format the final version as a block I can paste into this Project's instructions."</span></div>
+        <div class="prompt power-only" data-prompt-id="p5"><span class="prompt-label">Brain dump to briefing</span><button class="copy" type="button" aria-label="Copy brain dump to briefing prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"Here is everything I know about how I do [task], in no particular order: [paste the dump, an existing SOP, or a voice-note transcript]. Turn this into a complete set of instructions written as if briefing an assistant on their first day: what comes in, the steps in order, what a good finished result looks like, the rules, and what to do when unsure (default: stop and ask me). Then list what's still missing or ambiguous as questions for me, and after I answer, produce the final version as a block I can paste into this Project's instructions."</span></div>
+        <div class="prompt" data-prompt-id="p6"><span class="prompt-label">Teach by example</span><button class="copy" type="button" aria-label="Copy teaching by example prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"Here are real examples of this task done to my standard: [paste 2 or 3]. Study them and describe the pattern you see: structure, tone, length, what's always included, what's never included. Then add that pattern to your instructions so every future result matches it, and use this exact format for every response."</span></div>
+      </div>
+    </article>
+
+    <article class="step-grid">
+      <div><span class="badge">Step 5</span><h3>Run it alongside yourself for a week.</h3><p>Every gap is a missing instruction.</p><ul class="actions"><li><label><input type="checkbox" data-check="s5-parallel">Run the manual and AI versions each day.</label></li><li><label><input type="checkbox" data-check="s5-gap">Keep a gap list.</label></li><li><label><input type="checkbox" data-check="s5-update">Update the briefing without changing what works.</label></li></ul></div>
+      <div><div class="prompt" data-prompt-id="p7"><span class="prompt-label">Parallel-week gap closer</span><button class="copy" type="button" aria-label="Copy parallel-week gap closer prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"Here is what you produced today for [task], and here is what I produced doing the same task by hand: [paste both]. List every meaningful difference between them, tell me for each one which instruction was missing or unclear that caused it, and rewrite your instructions with those gaps fixed. Keep everything that already works unchanged."</span></div></div>
+    </article>
+
+    <article class="step-grid">
+      <div><span class="badge">Step 6</span><h3>Schedule it and review a sample weekly.</h3><p>Your name means your approval.</p><ul class="actions"><li><label><input type="checkbox" data-check="s6-schedule">Schedule only after the parallel week.</label></li><li><label><input type="checkbox" data-check="s6-place">Deliver each run to one fixed place.</label></li><li><label><input type="checkbox" data-check="s6-review">Review a sample and schedule health each week.</label></li></ul></div>
+      <div>
+        <div class="prompt" data-prompt-id="p8"><span class="prompt-label">Scheduled task skeleton</span><button class="copy" type="button" aria-label="Copy scheduled task prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"Every weekday at [time], read every email that arrived since the previous run. Sort them into: needs a decision from me, needs a reply (draft one for my review, never send anything), useful information (one line each), and everything else (one line on why it can wait). If anything looks urgent or unusual, put it at the top and tell me why. Deliver the whole thing as one message, in exactly this format: [paste one example of the summary the way you want it]."</span></div>
+        <div class="prompt" data-prompt-id="p8-generic"><span class="prompt-label">Scheduled task, generic frame</span><button class="copy" type="button" aria-label="Copy generic scheduled task prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"Every [cadence] at [time], [gather these inputs from these named places]. [Process them with these steps]. Deliver the result to [one fixed place], in exactly this format: [example]. Never [send / publish / delete] anything; anything that needs an action from me goes in a section called Needs my decision."</span></div>
+        <div class="prompt" data-prompt-id="p9"><span class="prompt-label">Weekly quality review</span><button class="copy" type="button" aria-label="Copy weekly quality review prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"Here are [3 to 5] outputs you produced this week for [task]: [paste or attach]. Compare them against your instructions and against this example of the standard: [paste]. Tell me: where you followed the instructions, where you drifted, and what in the instructions should be tightened to stop the drift. Do not defend the outputs; I want the honest gap list."</span></div>
+        <div class="prompt power-only" data-prompt-id="p10"><span class="prompt-label">Revive a workflow</span><button class="copy" type="button" aria-label="Copy workflow revival prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"You run [task] for me and the quality has dropped, or the scheduled run stopped. Here are the last good output and the most recent one: [paste both]. First, diagnose what changed: the inputs, the instructions, or the format drift. Second, check whether your instructions still cover the current shape of the inputs, and rewrite the outdated parts. Third, give me the final corrected instructions as one block I can re-save, because re-saving is also how a silently stopped scheduled task gets revived."</span></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="section" id="sop">
+    <div class="section-head"><div class="section-number">02</div><div><p class="eyebrow">SOP extraction</p><h2>Start where work breaks.</h2><p>People can describe a failure in detail. Use that detail to find the process stored in someone’s head.</p></div></div>
+    <div class="card-grid">
+      <article class="card"><h3>Three failure questions</h3><ol><li>Where do things most often go wrong or arrive late: a handoff between two people, two tools that don't talk, or a client waiting?</li><li>What only one person in your business knows how to do?</li><li>What question do you answer over and over, in slightly different words, for different people?</li></ol></article>
+      <article class="card"><h3>Mark every step</h3><ul class="actions"><li><label><input type="checkbox" data-check="sop-me">Needs me: my judgment, relationship, or taste.</label></li><li><label><input type="checkbox" data-check="sop-human">Needs a human: someone can oversee and intervene.</label></li><li><label><input type="checkbox" data-check="sop-nobody">Needs nobody: describable, checkable, machine-runnable.</label></li></ul></article>
+    </div>
+    <table><thead><tr><th>Light</th><th>Rule</th><th>Examples</th></tr></thead><tbody><tr><td class="green">Green</td><td>Hand it over completely. Wrong output costs minutes.</td><td>Sorting, summarizing, transcribing, research, formatting.</td></tr><tr><td class="yellow">Yellow</td><td>Machine drafts, you finish and send. Wrong output costs trust.</td><td>Emails, proposals, posts, client reports.</td></tr><tr><td class="red">Red</td><td>Keep the decision with you.</td><td>Pricing, saying no, apologies, negotiation.</td></tr></tbody></table>
+    <details class="workshop-note"><summary><span class="wn-tag">From the workshop</span>"My work is too custom to automate."</summary><div class="wn-body"><p>True for the whole job, false for every task inside it. That's exactly why you mark each step: needs me, needs a human, needs nobody. The judgment stays with you; the sorting, formatting, summarizing and so on never needed you in the first place.</p></div></details>
+  </section>
+
+  <section class="section" id="map">
+    <div class="section-head"><div class="section-number">03</div><div><p class="eyebrow">Where work happens</p><h2>Answer. Work. Machine.</h2><p>In the chat window you get an answer. In the workspace you get work. In the code surface you get a machine. Every failed AI story comes from asking the answer window to do the work of the other two.</p></div></div>
+    <table><thead><tr><th>Surface</th><th>On Claude</th><th>On ChatGPT</th><th>What you get</th></tr></thead><tbody><tr><td>Chat window</td><td>Claude chat</td><td>ChatGPT chat</td><td>An answer. Questions, single drafts, thinking out loud. This is the sounding board, and it's only one room in the building.</td></tr><tr><td>Workspace</td><td>Cowork and Design</td><td>Work mode</td><td>Work. It holds your instructions and files, runs multi-step jobs, and produces finished pieces you review.</td></tr><tr><td>Code surface</td><td>Claude Code</td><td>Codex</td><td>A machine. It remembers, improves, and touches your own files. One evening to set up, or delegate the setup.</td></tr></tbody></table>
+    <p>One honest limitation to know: neither platform reacts to events in real time. Nothing fires the moment an email arrives. Scheduled runs are the workaround: they run on a clock, at most once per hour, checking and notifying you only when something meaningful changed. That's enough for everything in this workbook.</p>
+    <div class="card-grid">
+      <article class="card"><h3>The model rule</h3><p>The surface decides where the work happens. The model decides how much thinking it gets.</p><p>Match the brain to the cost of a mistake, not to the size of the task: the fast, cheap model sorts and summarizes, and the big one writes anything a client reads with your name on it.</p></article>
+      <article class="card"><h3>One home base</h3><ol><li>Pick one home base: the AI app you already pay for.</li><li>Bring your tools into it. You never go out to your tools; your tools come in to it.</li><li>Add a specialist only when a task demands it.</li></ol></article>
+    </div>
+    <p>And so you know: my own setup runs several models through a custom harness, and some days it overwhelms me too. That's my lab, not my recommendation. If you can write a note to a new assistant and read their draft the next morning, you already have every technical skill this method needs.</p>
+    <details class="workshop-note"><summary><span class="wn-tag">From the workshop</span>"It's just a sounding board."</summary><div class="wn-body"><p>That's the chat window talking, and I use it as a sounding board too, don't imagine I don't. But the chat window is one room in the building. The workspace gives you work, the code surface gives you a machine, and most people judge the whole building without ever leaving the first room.</p></div></details>
+    <details class="workshop-note"><summary><span class="wn-tag">From the workshop</span>"There are too many tools, it's too technical."</summary><div class="wn-body"><p>The overwhelm comes from copying someone else's stack piece by piece. You don't need to keep up with the tools; you need one home base and one workflow. Everything in this workbook happens inside the app you already pay for.</p></div></details>
+  </section>
+
+  <section class="section" id="builds">
+    <div class="section-head"><div class="section-number">04</div><div><p class="eyebrow">Choose one</p><h2>Four builds</h2><p>Use the track that matches the task your hours-back map surfaced.</p></div></div>
+    <div class="card-grid">
+      <article class="card"><span class="badge">Track 1</span><h3>Inbox triage</h3><ol><li>Connect Gmail only.</li><li>Create a Project.</li><li>Run the self-briefing interview.</li><li>Test on today’s inbox.</li><li>Run alongside yourself for one week.</li></ol></article>
+      <article class="card"><span class="badge">Track 2</span><h3>Branded assets</h3><p><strong>Claude Design:</strong> import colors, fonts, logo, and one past deliverable. Check each output against the system.</p><p><strong>ChatGPT Projects and Template Creator:</strong> upload the brand kit, point the instructions at the files, and turn an approved deck into a reusable template.</p><p><a href="downloads/brand-kit.zip">Download the brand-kit folder.</a></p></article>
+      <article class="card"><span class="badge">Track 3</span><h3>Your own task</h3><p>Use the setup navigator. Let your own tool walk you through its product one confirmed step at a time.</p></article>
+      <article class="card"><span class="badge">Track 4</span><h3>Daily overview</h3><p>One briefing that says what today looks like, what is waiting on you, and what you need to know before each meeting.</p></article>
+    </div>
+    <h3 style="margin-top:2rem">Daily overview tiers</h3>
+    <table><thead><tr><th>Tier</th><th>Who it is for</th><th>Setup</th><th>How it runs</th></tr></thead><tbody><tr><td>Chat plus a schedule</td><td>Everyone in the room, today</td><td>10 minutes</td><td>Connect Gmail, Calendar, and Drive. Ask for the briefing by hand each morning.</td></tr><tr><td>Agent workspace</td><td>Anyone who wants it to run without them</td><td>20 minutes</td><td>Cowork or Work mode with saved instructions and a schedule.</td></tr><tr><td>Claude Code or Codex</td><td>People who want it to remember, improve, and touch their own files</td><td>One evening, or delegate it</td><td>Keep the brief in a file and run routines from one system.</td></tr></tbody></table>
+    <div class="prompt" data-prompt-id="morning"><span class="prompt-label">Morning briefing interview</span><button class="copy" type="button" aria-label="Copy morning briefing prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"I want you to build me a morning briefing that you will produce for me every workday. Before you write anything, interview me one question at a time to find out: what I need to know about my day before I open my inbox, what makes a meeting one I have to prepare for versus one I can walk into cold, which people or clients I should always be told about by name, what I want you to leave out entirely, and what time I want it. Then write the briefing instructions back to me as a short numbered brief I can save and reuse, ending with the exact format the output should take. Do not write the briefing yet. Write the instructions for it."</span></div>
+    <div class="prompt" data-prompt-id="meeting"><span class="prompt-label">Add meeting prep</span><button class="copy" type="button" aria-label="Copy meeting prep prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"Add a meeting preparation section to the brief. For every meeting on my calendar today, you should look back through my email and my files for the last exchange with those people, and give me: what we agreed last time, anything I promised and have not delivered, and one thing that changed since we last spoke. If you cannot find anything, say so plainly rather than guessing. Mark anything you are unsure about as needing my check."</span></div>
+  </section>
+
+  <section class="section" id="scheduling">
+    <div class="section-head"><div class="section-number">05</div><div><p class="eyebrow">After the parallel week</p><h2>Schedule the working version.</h2><p>Both platforms interview you. Start with read-only access. Grant sending or writing only after a week of watching the workflow.</p></div></div>
+    <div class="card-grid"><article class="card"><h3>Claude</h3><p>Schedule &gt; New Task starts a setup conversation, then asks for the task type, cadence, time, and notifications. Two flavors exist: cloud routines (minimum one hour apart, each run starts fresh) and local scheduled tasks in the desktop app, which can use everything on your machine as long as it is awake.</p></article><article class="card"><h3>ChatGPT</h3><p>The Schedule surface offers an interview-style setup prompt. Tasks run on a clock or as monitors that check periodically and notify you only on a meaningful change, at most once per hour.</p></article></div>
+    <div class="prompt" data-prompt-id="chatgpt-schedule"><span class="prompt-label">ChatGPT schedule setup</span><button class="copy" type="button" aria-label="Copy ChatGPT schedule setup prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"Let's set up a scheduled task. First explain how scheduled tasks work in ChatGPT, then interview me to figure out what I need to schedule and when it should run."</span></div>
+  </section>
+
+  <section class="section" id="plan">
+    <div class="section-head"><div class="section-number">06</div><div><p class="eyebrow">Operating plan</p><h2>Four weeks</h2></div></div>
+    <div class="card-grid"><article class="card"><span class="badge">Week 1</span><h3>Run alongside yourself.</h3><p>Compare the manual and machine versions each day.</p></article><article class="card"><span class="badge">Week 2</span><h3>Add the check and stop condition.</h3><p>Turn every gap into an instruction. Stop and ask when unsure.</p></article><article class="card"><span class="badge">Week 3</span><h3>Schedule and sample.</h3><p>Put the stable briefing on a clock and review a sample.</p></article><article class="card"><span class="badge">Week 4</span><h3>Build the second workflow.</h3><p>Return to your ranked list and take the next task through the same process.</p></article></div>
+    <details class="workshop-note"><summary><span class="wn-tag">From the workshop</span>"I don't have time to set this up."</summary><div class="wn-body"><p>I know it can feel like one more project on the pile. But this is the only place in your business where the exchange rate is that good: an evening of setup buys back hours every single week, forever. That's also why the rule is one workflow, not five. Don't build five this week. Build one and run it honestly for seven days.</p></div></details>
+  </section>
+
+  <section class="section" id="client-data"><div class="section-head"><div class="section-number">07</div><div><p class="eyebrow">Client data</p><h2>Disclose AI processing.</h2><div class="notice"><p>Put a clause in your agreements saying client information is stored in and processed by the AI tools you use to deliver the work. Seek legal advice for the wording in your country.</p></div>
+    <details class="workshop-note"><summary><span class="wn-tag">From the workshop</span>"I can't trust it with client work."</summary><div class="wn-body"><p>Correct as an observation, wrong as a conclusion. Trust is the output of the process, not the entry fee: the machine drafts, it checks its own work against a checklist you wrote once, and nothing leaves without your signature. Tell your clients how their information is processed, and grant every connection the smallest access it needs. Small access, small mistakes.</p></div></details>
+  </div></div></section>
+
+  <section class="section power-only" id="power">
+    <div class="section-head"><div class="section-number">08</div><div><p class="eyebrow">Power user mode</p><h2>Build for durability.</h2></div></div>
+    <h3>Brand-kit folder anatomy</h3>
+    <pre class="card">brand-kit/
+  AGENTS.md          the law: always use tokens, never invent values
+  tokens.css         colors, fonts, spacing, corner radius, shadows
+  templates/         deck.html, proposal.html, landing-page.html
+  assets/            logos, fonts
+  examples/          two past outputs that were approved</pre>
+    <p>In Claude Code or Codex, keep the short law file at `AGENTS.md`. It points every build at the shared tokens and templates, so the rules load with the work.</p>
+    <h3>Three levels of durability</h3>
+    <table><thead><tr><th>Level</th><th>What it is</th><th>Where design lives</th><th>Drift</th></tr></thead><tbody><tr><td>Instructions only</td><td>Color, font, and style described in prose</td><td>Re-interpreted each run</td><td>High</td></tr><tr><td>Reference files</td><td>Brand brief plus an approved asset</td><td>Files the model compares</td><td>Medium</td></tr><tr><td>Template artifact</td><td>A presentation template or styled HTML file</td><td>Inside the artifact</td><td>Near zero</td></tr></tbody></table>
+    <h3>Proposal from a meeting transcript</h3>
+    <ol class="recipe"><li>Give the workflow the meeting transcript.</li><li>Add past proposals, pricing rules, and the brand kit.</li><li>Create a designed proposal from the matching template.</li><li>Run a self-review checklist pass. Trace every number to the transcript or pricing rules. Mark unsupported points for your check.</li><li>Review, change what only you can know, and approve.</li><li>Create a draft email with the proposal attached. Leave it unsent.</li></ol>
+    <div class="prompt" data-prompt-id="advanced-brief"><span class="prompt-label">Build the briefing</span><button class="copy" type="button" aria-label="Copy advanced briefing prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"I want you to handle [task] for me on a regular basis, and I want you to write your own instructions for it. Interview me one question at a time, never more than one, until you know: what comes in and from where, the exact steps I currently follow, what a finished result I'd be happy with looks like, the rules and edge cases I already know about, and what you should do when you're unsure, where the default answer is stop and ask me. Then write the complete instructions as if you were briefing an assistant on their first day, show them to me, and revise them based on my corrections until I say they're final. Format the final version as a block I can paste into this Project's instructions."</span></div>
+    <h3>Check ladder</h3>
+    <ol><li>Spot-check one item.</li><li>Write the rule that must always hold.</li><li>Have the AI grade the output against your checklist.</li><li>Keep human approval before sending or publishing.</li></ol>
+    <h3>Claude Code routines</h3>
+    <table><thead><tr><th>Routine</th><th>Cadence</th><th>Files</th><th>When it runs</th></tr></thead><tbody><tr><td>Local</td><td>Minimum one minute</td><td>Can read local files</td><td>App open and machine awake</td></tr><tr><td>Remote</td><td>Minimum one hour</td><td>No local file access</td><td>Cloud, with the computer off</td></tr></tbody></table>
+  </section>
+
+  <section class="section" id="downloads">
+    <div class="section-head"><div class="section-number">09</div><div><p class="eyebrow">Take it with you</p><h2>Downloads</h2></div></div>
+    <div class="card-grid"><a class="download" href="downloads/brand-kit.zip" download><span><strong>Brand kit</strong><br>A portable folder with tokens, templates, assets, and instructions.</span><span aria-hidden="true">↓</span></a><a class="download" href="downloads/prompt-library.txt" download><span><strong>Prompt library</strong><br>A plain-text copy of every workbook prompt.</span><span aria-hidden="true">↓</span></a></div>
+    <p style="margin-top:2rem">After you unzip the brand kit, this is the first prompt to run inside it. The tool interviews you and fills in your brand, so you never start from a blank file.</p>
+    <div class="prompt" data-prompt-id="brand-kit-setup"><span class="prompt-label">Brand-kit setup interview</span><button class="copy" type="button" aria-label="Copy brand-kit setup prompt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg><span class="copy-status">Copy</span></button><span class="prompt-text">"I have a brand kit folder open. It contains tokens.css, BRAND-BRIEF.md, an assets folder with my logo and font files, an examples folder with one or two past assets I consider on-brand, and a templates folder. Your job is to set it up for my business, and I want you to interview me instead of guessing. Ask me one question at a time, in this order, and wait for my answer before the next question: 1. My business name and what it does, in one sentence. 2. My main brand color and any secondary colors. If I only know them roughly, look at the files in assets and examples and propose exact hex codes for me to confirm. 3. My fonts, for headings and for body text. If I do not know, propose one pairing based on the examples and one safe fallback. 4. Three words that describe how my brand should sound, and one word it should never sound like. 5. Things I never want to see in my materials: colors, phrases, styles, layouts. 6. Which file in examples is the best reference for what looks right, and what specifically makes it right. When the interview is done: fill in tokens.css with the confirmed values, complete every section of BRAND-BRIEF.md from my answers, and show me both files for approval before touching anything else. Do not invent a value I did not confirm. If a question was left unanswered, leave that field marked as [TO CONFIRM] rather than filling it with a guess."</span></div>
+  </section>
+</main>
+
+<section class="section cta" id="connect">
+  <div class="wrap-inner">
+    <p class="eyebrow">One thing before you go</p>
+    <h2>Let's stay connected.</h2>
+    <p class="cta-lead">Built your workflow and want to tell me what happened, got stuck on a step, or found a better way? I want to hear it. One call to action, nothing else: connect with me on LinkedIn.</p>
+    <div class="qr-card"><svg viewBox="0 0 210 210" width="210" height="210" role="img" aria-label="QR code linking to Gabe Marusca on LinkedIn" class="segno"><g transform="scale(6)"><path fill="#fefdff" d="M0 0h35v35h-35z"/><path class="qrline" stroke="#000" d="M3 3.5h7m3 0h1m1 0h1m2 0h1m1 0h3m2 0h7m-29 1h1m5 0h1m3 0h1m1 0h2m1 0h1m2 0h1m1 0h1m1 0h1m5 0h1m-29 1h1m1 0h3m1 0h1m2 0h3m2 0h1m2 0h1m1 0h1m2 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m3 0h2m2 0h3m1 0h2m2 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m2 0h1m2 0h7m3 0h1m1 0h3m1 0h1m-29 1h1m5 0h1m1 0h1m2 0h2m1 0h2m2 0h3m1 0h1m5 0h1m-29 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-19 1h3m1 0h1m1 0h5m-21 1h1m2 0h1m1 0h2m1 0h1m3 0h3m3 0h2m1 0h1m1 0h1m-24 1h1m1 0h1m6 0h2m1 0h2m2 0h1m4 0h2m2 0h1m2 0h1m-28 1h1m4 0h1m4 0h1m1 0h2m1 0h2m1 0h4m2 0h3m-28 1h4m1 0h1m1 0h2m2 0h3m1 0h1m2 0h1m2 0h1m1 0h2m1 0h2m-28 1h2m2 0h4m1 0h1m1 0h2m1 0h1m1 0h2m1 0h4m2 0h1m1 0h2m-28 1h1m1 0h3m2 0h2m9 0h3m1 0h1m-24 1h1m5 0h4m1 0h2m4 0h2m1 0h1m4 0h4m-28 1h1m7 0h1m2 0h2m1 0h5m5 0h1m1 0h1m-28 1h2m2 0h5m1 0h2m1 0h3m1 0h1m2 0h2m1 0h1m3 0h1m-26 1h1m8 0h1m2 0h1m1 0h2m3 0h3m1 0h1m2 0h1m-29 1h1m1 0h2m1 0h3m1 0h5m3 0h1m2 0h2m1 0h1m3 0h2m-25 1h1m2 0h1m1 0h2m2 0h1m1 0h1m1 0h1m2 0h2m5 0h2m-29 1h1m1 0h1m1 0h5m3 0h1m1 0h1m1 0h1m1 0h1m1 0h5m1 0h1m-19 1h2m2 0h2m2 0h1m2 0h2m3 0h1m1 0h3m-29 1h7m2 0h2m2 0h2m2 0h1m2 0h1m1 0h1m1 0h1m2 0h1m-28 1h1m5 0h1m1 0h1m1 0h4m4 0h1m1 0h1m3 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m5 0h1m1 0h1m1 0h2m2 0h5m2 0h2m-29 1h1m1 0h3m1 0h1m1 0h2m3 0h2m2 0h1m1 0h1m2 0h1m1 0h4m-28 1h1m1 0h3m1 0h1m2 0h2m1 0h1m1 0h1m4 0h1m4 0h3m1 0h1m-29 1h1m5 0h1m2 0h2m4 0h1m1 0h6m1 0h1m2 0h1m-28 1h7m1 0h6m3 0h1m2 0h5m2 0h1"/></g></svg></div>
+    <p class="cta-link"><a href="https://www.linkedin.com/in/gabemarusca">linkedin.com/in/gabemarusca</a></p>
+  </div>
+</section>
+<footer><div class="wrap"><p class="wordmark" style="font-size:20.8px;margin-bottom:.5rem">Gabe Marusca<span>.</span></p><p>Run your business with AI · Madeira Friends Hub · August 11, 2026</p></div></footer>
+
+<script>
+(() => {
+  const modeKey = 'funchal-workbook-mode';
+  const checkPrefix = 'funchal-workbook-check:';
+  const modeButtons = [...document.querySelectorAll('[data-mode]')];
+
+  function setMode(mode) {
+    const next = mode === 'power' ? 'power' : 'guided';
+    document.body.classList.toggle('power', next === 'power');
+    document.body.classList.toggle('guided', next === 'guided');
+    modeButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.mode === next)));
+    try { localStorage.setItem(modeKey, next); } catch (error) {}
+  }
+
+  let savedMode = 'guided';
+  try { savedMode = localStorage.getItem(modeKey) || 'guided'; } catch (error) {}
+  setMode(savedMode);
+  modeButtons.forEach(button => button.addEventListener('click', () => setMode(button.dataset.mode)));
+
+  document.querySelectorAll('[data-check]').forEach(box => {
+    try { box.checked = localStorage.getItem(checkPrefix + box.dataset.check) === 'true'; } catch (error) {}
+    box.addEventListener('change', () => {
+      try { localStorage.setItem(checkPrefix + box.dataset.check, String(box.checked)); } catch (error) {}
+    });
+  });
+
+  function fallbackCopy(text) {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('readonly', '');
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+    const result = document.execCommand('copy');
+    area.remove();
+    if (!result) throw new Error('Copy failed');
+  }
+
+  document.querySelectorAll('.copy').forEach(button => {
+    button.addEventListener('click', async () => {
+      const prompt = button.closest('.prompt').querySelector('.prompt-text').textContent;
+      try {
+        if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(prompt);
+        else fallbackCopy(prompt);
+        const status = button.querySelector('.copy-status');
+        status.textContent = 'Copied';
+        window.setTimeout(() => { status.textContent = 'Copy'; }, 1400);
+      } catch (error) {
+        const status = button.querySelector('.copy-status');
+        status.textContent = 'Select text';
+        window.setTimeout(() => { status.textContent = 'Copy'; }, 1800);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

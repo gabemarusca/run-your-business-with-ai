@@ -1,0 +1,53 @@
+USE WHEN: You do not know how to set something up.
+explain how this works, then interview me.
+
+USE WHEN: You need to reconstruct yesterday and find repeating work.
+"I want to find out where my working time actually goes, and I'd like you to reconstruct yesterday with me. Interview me one question at a time, starting with when I sat down to work, using my calendar, my sent emails, and my memory as sources. Build a list of everything I did and roughly how long each thing took, and mark whether it happens once or repeats through the week. When we're done, show me the repeating tasks ranked by how much time they likely eat per week, and flag any task I described with frustration in my wording, because those are probably the ones I shouldn't be doing myself."
+
+USE WHEN: You have notes, a time log, or a voice-note transcript to sort.
+"Here is a brain dump of everything I do in a normal week in my business: [paste notes or voice-note transcript]. Break it into individual tasks. For each one, tell me whether it repeats, roughly what it costs me per week in time, and which bucket it belongs in: delete (nobody actually needs this anymore), delegate to a person (needs human judgment or relationships), automate fully (a wrong result would cost minutes), or automate as a draft I review (another human reads it with my name on it). Where you can't decide, ask me clarifying questions one at a time. Finish with the one task you'd automate first: the fully automatable one that eats the most time."
+
+USE WHEN: You need to rank repeating tasks and choose one.
+"Here is the list of repeating tasks we just built. Rank the top five by highest impact against lowest setup effort, and for each one tell me: the hours a week it gives back, how hard it is to describe step by step (easy, medium, hard), and what actually improves in my business if it goes away, in plain words, not jargon. Then pick one and tell me why it beats the other four. If your pick isn't the biggest time sink, say why you chose it anyway."
+
+USE WHEN: A task belongs with a person.
+"I need to hand [task] to a person instead of doing it myself. Interview me one question at a time until you know everything they'd need: what comes in, the steps, what good looks like, the rules, common mistakes, and what they should escalate to me instead of deciding alone. Then write it up as a one-page working guide for a capable new hire, in plain language, with a checklist at the end they can follow on their first day."
+
+USE WHEN: You need your AI to choose a surface and guide setup.
+"I use [ChatGPT / Claude] on a paid plan, and I want to automate this task: [one sentence]. Tell me exactly where in your product I should build this: a normal chat, a Project, the desktop agent, or a scheduled task, and then walk me through the setup one step at a time, waiting for me to confirm each step before giving me the next. Include which connectors or folder access I need to turn on for this task, and just as important, which ones I should leave off. Assume I have never done any of this before."
+
+USE WHEN: You are building a workflow briefing through an interview.
+"I want you to handle [task] for me on a regular basis, and I want you to write your own instructions for it. Interview me one question at a time, never more than one, until you know: what comes in and from where, the exact steps I currently follow, what a finished result I'd be happy with looks like, the rules and edge cases I already know about, and what you should do when you're unsure, where the default answer is stop and ask me. Then write the complete instructions as if you were briefing an assistant on their first day, show them to me, and revise them based on my corrections until I say they're final. Format the final version as a block I can paste into this Project's instructions."
+
+USE WHEN: You already have a brain dump or documented process.
+"Here is everything I know about how I do [task], in no particular order: [paste the dump, an existing SOP, or a voice-note transcript]. Turn this into a complete set of instructions written as if briefing an assistant on their first day: what comes in, the steps in order, what a good finished result looks like, the rules, and what to do when unsure (default: stop and ask me). Then list what's still missing or ambiguous as questions for me, and after I answer, produce the final version as a block I can paste into this Project's instructions."
+
+USE WHEN: You have approved examples of the task.
+"Here are real examples of this task done to my standard: [paste 2 or 3]. Study them and describe the pattern you see: structure, tone, length, what's always included, what's never included. Then add that pattern to your instructions so every future result matches it, and use this exact format for every response."
+
+USE WHEN: You are comparing the AI and manual versions during the parallel week.
+"Here is what you produced today for [task], and here is what I produced doing the same task by hand: [paste both]. List every meaningful difference between them, tell me for each one which instruction was missing or unclear that caused it, and rewrite your instructions with those gaps fixed. Keep everything that already works unchanged."
+
+USE WHEN: A stable inbox workflow is ready to be scheduled.
+"Every weekday at [time], read every email that arrived since the previous run. Sort them into: needs a decision from me, needs a reply (draft one for my review, never send anything), useful information (one line each), and everything else (one line on why it can wait). If anything looks urgent or unusual, put it at the top and tell me why. Deliver the whole thing as one message, in exactly this format: [paste one example of the summary the way you want it]."
+
+USE WHEN: A stable recurring workflow other than inbox triage is ready to be scheduled.
+"Every [cadence] at [time], [gather these inputs from these named places]. [Process them with these steps]. Deliver the result to [one fixed place], in exactly this format: [example]. Never [send / publish / delete] anything; anything that needs an action from me goes in a section called Needs my decision."
+
+USE WHEN: You are reviewing a sample after handover.
+"Here are [3 to 5] outputs you produced this week for [task]: [paste or attach]. Compare them against your instructions and against this example of the standard: [paste]. Tell me: where you followed the instructions, where you drifted, and what in the instructions should be tightened to stop the drift. Do not defend the outputs; I want the honest gap list."
+
+USE WHEN: A workflow has drifted or a scheduled task stopped.
+"You run [task] for me and the quality has dropped, or the scheduled run stopped. Here are the last good output and the most recent one: [paste both]. First, diagnose what changed: the inputs, the instructions, or the format drift. Second, check whether your instructions still cover the current shape of the inputs, and rewrite the outdated parts. Third, give me the final corrected instructions as one block I can re-save, because re-saving is also how a silently stopped scheduled task gets revived."
+
+USE WHEN: You are building the daily overview.
+"I want you to build me a morning briefing that you will produce for me every workday. Before you write anything, interview me one question at a time to find out: what I need to know about my day before I open my inbox, what makes a meeting one I have to prepare for versus one I can walk into cold, which people or clients I should always be told about by name, what I want you to leave out entirely, and what time I want it. Then write the briefing instructions back to me as a short numbered brief I can save and reuse, ending with the exact format the output should take. Do not write the briefing yet. Write the instructions for it."
+
+USE WHEN: You are adding meeting preparation to a daily overview.
+"Add a meeting preparation section to the brief. For every meeting on my calendar today, you should look back through my email and my files for the last exchange with those people, and give me: what we agreed last time, anything I promised and have not delivered, and one thing that changed since we last spoke. If you cannot find anything, say so plainly rather than guessing. Mark anything you are unsure about as needing my check."
+
+USE WHEN: You are setting up a scheduled task in ChatGPT Work.
+"Let's set up a scheduled task. First explain how scheduled tasks work in ChatGPT, then interview me to figure out what I need to schedule and when it should run."
+
+USE WHEN: You are setting up the brand kit folder for the first time.
+"I have a brand kit folder open. It contains tokens.css, BRAND-BRIEF.md, an assets folder with my logo and font files, an examples folder with one or two past assets I consider on-brand, and a templates folder. Your job is to set it up for my business, and I want you to interview me instead of guessing. Ask me one question at a time, in this order, and wait for my answer before the next question: 1. My business name and what it does, in one sentence. 2. My main brand color and any secondary colors. If I only know them roughly, look at the files in assets and examples and propose exact hex codes for me to confirm. 3. My fonts, for headings and for body text. If I do not know, propose one pairing based on the examples and one safe fallback. 4. Three words that describe how my brand should sound, and one word it should never sound like. 5. Things I never want to see in my materials: colors, phrases, styles, layouts. 6. Which file in examples is the best reference for what looks right, and what specifically makes it right. When the interview is done: fill in tokens.css with the confirmed values, complete every section of BRAND-BRIEF.md from my answers, and show me both files for approval before touching anything else. Do not invent a value I did not confirm. If a question was left unanswered, leave that field marked as [TO CONFIRM] rather than filling it with a guess."
